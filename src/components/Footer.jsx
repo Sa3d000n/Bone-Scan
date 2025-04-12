@@ -6,9 +6,9 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        {/* Main Content */}
+       
         <div className="flex flex-col md:flex-row justify-between gap-6">
-          {/* Project Info */}
+          
           <div className="mb-6 md:mb-0">
             <h2 className="text-xl font-bold">BoneScan AI</h2>
             <p className="mt-2 text-gray-300 max-w-xs">
@@ -16,7 +16,7 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Quick Links */}
+          
           <div>
             <h3 className="text-lg font-medium mb-2">Links</h3>
             <ul className="text-gray-400">
