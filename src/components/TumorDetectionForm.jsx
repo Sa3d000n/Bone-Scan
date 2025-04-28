@@ -5,6 +5,8 @@ import {
   MdCloudUpload,
   MdOutlineAnalytics,
   MdRestartAlt,
+  MdExpandMore,
+  MdExpandLess,
 } from "react-icons/md";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
@@ -16,6 +18,11 @@ export default function TumorDetectionForm() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [expandedSections, setExpandedSections] = useState({
+    symptoms: false,
+    physicalSigns: false,
+    recommendations: false
+  });
 
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles && acceptedFiles.length > 0) {
@@ -75,6 +82,8 @@ export default function TumorDetectionForm() {
 
       const data = await response.json();
       setResult(data);
+      // Auto-expand symptoms section when results are received
+      setExpandedSections(prev => ({ ...prev, symptoms: true }));
     } catch (err) {
       setError("An error occurred: " + err.message);
     } finally {
@@ -92,11 +101,60 @@ export default function TumorDetectionForm() {
     setAge("");
     setGender("");
     setError(null);
+    setExpandedSections({
+      symptoms: false,
+      physicalSigns: false, 
+      recommendations: false
+    });
+  };
+
+  const toggleSection = (section) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
+  const getSeverityColor = (stage) => {
+    switch (stage) {
+      case "Stage 0":
+        return "text-green-600";
+      case "Stage 1":
+        return "text-yellow-600";
+      case "Stage 2":
+        return "text-orange-600";
+      case "Stage 3":
+        return "text-red-600";
+      default:
+        return "text-gray-600";
+    }
+  };
+
+  const renderExpandableSection = (title, content, sectionKey) => {
+    return (
+      <div className="mt-4 border rounded-lg overflow-hidden">
+        <button 
+          onClick={() => toggleSection(sectionKey)}
+          className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+        >
+          <span className="font-medium text-gray-800">
+            {title}
+          </span>
+          {expandedSections[sectionKey] ? <MdExpandLess size={20} /> : <MdExpandMore size={20} />}
+        </button>
+        
+        {expandedSections[sectionKey] && (
+          <div className="p-4 bg-white">
+            {content}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
     <section className="bone-cancer-detection">
-      <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-screen-xl px-4 py-40 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-16 md:grid-cols-2 md:items-center md:gap-8">
           <div>
             <div className="max-w-lg md:max-w-none">
@@ -152,42 +210,47 @@ export default function TumorDetectionForm() {
                   <h3 className="font-semibold text-xl text-gray-900">
                     Analysis Results
                   </h3>
-                  <div className="mt-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-700 font-medium">
-                        Tumor Type:
-                      </span>
-                      <span className="text-gray-900 font-semibold">
-                        {result.tumor_type}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-700 font-medium">
-                        Severity:
-                      </span>
-                      <span
-                        className={`font-semibold ${
-                          result.tumor_stage === "Stage 0"
-                            ? "text-green-600"
-                            : result.tumor_stage === "Stage 1"
-                            ? "text-yellow-600"
-                            : result.tumor_stage === "Stage 2"
-                            ? "text-orange-600"
-                            : "text-red-600"
-                        }`}
-                      >
-                        {result.tumor_stage}
-                      </span>
-                    </div>
-                    <div className="text-gray-500 text-xs mt-2">
-                      Patient:{" "}
-                      {result.patient_data.age
-                        ? result.patient_data.age + " years old"
-                        : "Age not provided"}
-                      ,
-                      {result.patient_data.gender
-                        ? " " + result.patient_data.gender
-                        : " Gender not provided"}
+                  <div className="mt-4 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-700 font-medium">
+                          Tumor Type:
+                        </span>
+                        <span className="text-gray-900 font-semibold">
+                          {result.tumor_type}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-700 font-medium">
+                          Stage:
+                        </span>
+                        <span className={`font-semibold ${getSeverityColor(result.tumor_stage)}`}>
+                          {result.tumor_stage}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-700 font-medium">
+                          Severity:
+                        </span>
+                        <span className={`font-semibold ${
+                          result.severity === "None" ? "text-green-600" :
+                          result.severity === "Low" ? "text-yellow-600" :
+                          result.severity === "Medium" ? "text-orange-600" :
+                          "text-red-600"
+                        }`}>
+                          {result.severity}
+                        </span>
+                      </div>
+                      <div className="text-gray-500 text-xs mt-2">
+                        Patient:{" "}
+                        {result.patient_data.age
+                          ? result.patient_data.age + " years old"
+                          : "Age not provided"}
+                        ,
+                        {result.patient_data.gender
+                          ? " " + result.patient_data.gender
+                          : " Gender not provided"}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -293,7 +356,7 @@ export default function TumorDetectionForm() {
                 )}
               </form>
             ) : (
-              <div className="text-center p-4">
+              <div className="text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg
                     className="w-8 h-8 text-green-600"
@@ -317,17 +380,73 @@ export default function TumorDetectionForm() {
                   Your scan has been successfully analyzed by our AI system
                 </p>
 
-                <button
-                  onClick={resetForm}
-                  className="group relative inline-flex items-center overflow-hidden rounded-md bg-indigo-600 px-8 py-3 text-white focus:outline-none"
-                >
-                  <span className="absolute -end-full transition-all group-hover:end-4">
-                    <MdOutlineImageSearch size={20} />
-                  </span>
-                  <span className="text-sm font-medium transition-all group-hover:me-4">
-                    Start New Scan
-                  </span>
-                </button>
+                {/* Patient Experience Information */}
+                <div className="text-left">
+                  {result.patient_experience && (
+                    <>
+                      {/* Symptoms section */}
+                      {renderExpandableSection(
+                        "Common Symptoms",
+                        <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                          {result.patient_experience.common_symptoms.map((symptom, index) => (
+                            <li key={index}>{symptom}</li>
+                          ))}
+                        </ul>,
+                        "symptoms"
+                      )}
+                      
+                      {/* Physical Signs section */}
+                      {renderExpandableSection(
+                        "Physical Signs",
+                        <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                          {result.patient_experience.physical_signs.map((sign, index) => (
+                            <li key={index}>{sign}</li>
+                          ))}
+                        </ul>,
+                        "physicalSigns"
+                      )}
+                      
+                      {/* Pain & Mobility section */}
+                      <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                        <div className="space-y-3">
+                          <div>
+                            <span className="text-gray-700 font-medium">Pain Level:</span>
+                            <p className="text-gray-800">{result.patient_experience.pain_level}</p>
+                          </div>
+                          <div>
+                            <span className="text-gray-700 font-medium">Mobility Impact:</span>
+                            <p className="text-gray-800">{result.patient_experience.mobility_impact}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  
+                  {/* Treatment Recommendations */}
+                  {result.recommendations && renderExpandableSection(
+                    "Medical Recommendations",
+                    <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                      {result.recommendations.map((recommendation, index) => (
+                        <li key={index}>{recommendation}</li>
+                      ))}
+                    </ul>,
+                    "recommendations"
+                  )}
+                </div>
+
+                <div className="mt-6">
+                  <button
+                    onClick={resetForm}
+                    className="group relative inline-flex items-center overflow-hidden rounded-md bg-indigo-600 px-8 py-3 text-white focus:outline-none"
+                  >
+                    <span className="absolute -end-full transition-all group-hover:end-4">
+                      <MdOutlineImageSearch size={20} />
+                    </span>
+                    <span className="text-sm font-medium transition-all group-hover:me-4">
+                      Start New Scan
+                    </span>
+                  </button>
+                </div>
               </div>
             )}
           </div>

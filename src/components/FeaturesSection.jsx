@@ -50,7 +50,8 @@ const AnimatedFeature = ({
         transform transition-all duration-1000 ease-out 
         ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"
-        }`} id="features"
+        }`}
+      id="features"
     >
       <div
         className={`text flex flex-col gap-6 md:gap-10 
@@ -80,7 +81,10 @@ const AnimatedFeature = ({
 
 export default function FeaturesSection() {
   return (
-    <section className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 features flex flex-col gap-10">
+    <section
+      className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8 features flex flex-col gap-10"
+      id="features"
+    >
       <AnimatedFeature
         title="AI-Powered Bone Cancer Detection"
         description="Upload your MRI scan and let our advanced AI analyze it within seconds. Using deep learning, our model detects early signs of bone cancer with high accuracy—providing fast, reliable results to help you make informed health decisions."

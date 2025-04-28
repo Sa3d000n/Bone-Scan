@@ -1,24 +1,31 @@
 import "./App.css";
 import NavbarComponent from "./components/NavbarComponent";
-import HowItWorksSection from "./components/HowItWorksSection";
-import FeaturesSection from "./components/FeaturesSection";
-import WhyItMattersSection from "./components/WhyItMattersSection";
-import RealStoriesSection from "./components/RealStoriesSection";
-import FAQSection from "./components/FAQSection";
-import TumorDetectionForm from "./components/TumorDetectionForm";
 import Footer from "./components/Footer";
+import { Outlet, Route, RouterProvider, Routes } from "react-router";
+import HomePage from "./pages/HomePage";
+import ScanPage from "./pages/ScanPage";
+
+function Layout() {
+  return (
+    <>
+      <NavbarComponent />
+      <Outlet />
+      <Footer />
+    </>
+  );
+}
+
+
 
 function App() {
   return (
     <>
-      <NavbarComponent />
-      <HowItWorksSection />
-      <FeaturesSection />
-      <WhyItMattersSection />
-      <RealStoriesSection />
-      <FAQSection />
-      <TumorDetectionForm />
-      <Footer />
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="scan" element={<ScanPage />} />
+        </Route>
+      </Routes>
     </>
   );
 }

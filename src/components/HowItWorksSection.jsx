@@ -7,6 +7,7 @@ import four from "../assets/4.png";
 import five from "../assets/5.png";
 import six from "../assets/6.png";
 import { MdOutlineImageSearch } from "react-icons/md";
+import { Link } from "react-router";
 export default function HowItWorksSection() {
   return (
     <section className="how-it-works">
@@ -23,19 +24,20 @@ export default function HowItWorksSection() {
                 Upload your X-ray, CT, or MRI scan and receive <br /> instant,
                 AI-powered analysis for bone cancer <br /> detection.
               </p>
+              <Link to="/scan">
+                <a
+                  className="group relative inline-flex items-center overflow-hidden rounded-sm bg-indigo-600 px-8 py-3 text-white focus:ring-3 focus:outline-hidden mt-9"
+                  href="#"
+                >
+                  <span className="absolute -end-full transition-all group-hover:end-4">
+                    <MdOutlineImageSearch />
+                  </span>
 
-              <a
-                className="group relative inline-flex items-center overflow-hidden rounded-sm bg-indigo-600 px-8 py-3 text-white focus:ring-3 focus:outline-hidden mt-9"
-                href="#"
-              >
-                <span className="absolute -end-full transition-all group-hover:end-4">
-                  <MdOutlineImageSearch />
-                </span>
-
-                <span className="text-sm font-medium transition-all group-hover:me-4">
-                  Start Scanning Now
-                </span>
-              </a>
+                  <span className="text-sm font-medium transition-all group-hover:me-4">
+                    Start Scanning Now
+                  </span>
+                </a>
+              </Link>
             </div>
           </div>
 
